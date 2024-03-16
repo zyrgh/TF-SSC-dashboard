@@ -81,7 +81,7 @@ const handleCommand = (command: string) => {
   // 通过异步请求加载JSON文件并更新tableData
   const loadPackageData = async () => {
     try {
-      const response = await fetch('vulnerabilities.json');
+      const response = await fetch('src/assets/dataset/vulnerabilities.json');
       const jsonData = await response.json();
       tableData.value = jsonData;
     } catch (error) {
