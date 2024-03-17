@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import * as d3 from 'd3';
-import data from "../assets/dataset/graph.json";
+import data from "../assets/dataset/ssc_graph.json";
 
 const width = 928;
 const height = 680;
@@ -53,10 +53,14 @@ function drawBarChart(nodes: any, links: any) {
     node.attr("fill", d => {
         if(d.radius == 1){
             return d3.schemeCategory10[0];
-        }else if(d.radius == 3){
+        }else if(d.radius == 2){
             return d3.schemeCategory10[1];
-        }else{
+        }else if(d.radius == 3){
             return d3.schemeCategory10[2];
+        }else if(d.radius == 4){
+            return d3.schemeCategory10[4];
+        }else{
+            return d3.schemeCategory10[3];
         }
     });
 
