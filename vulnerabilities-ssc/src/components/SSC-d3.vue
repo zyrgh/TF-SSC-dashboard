@@ -35,7 +35,6 @@ let cveDate: {};
 if (props.selectedCve != "notSelected") {
     cveDate = cveAffectedPackage[props.selectedCve];
 }
-console.log(cveDate)
 
 function drawBarChart(nodes: any, links: any) {
     const simulation = d3.forceSimulation(nodes)
