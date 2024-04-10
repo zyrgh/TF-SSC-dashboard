@@ -5,10 +5,10 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component:()=>import('../views/vulnerabilities.vue')
+            component:()=>import('../views/home.vue')
         },
         {
-            path: '/vulnerabilities',
+            path: '/home',
             redirect: '/'
         },
         {
@@ -18,6 +18,22 @@ const router = createRouter({
         {
             path: '/graph',
             component: ()=>import('../components/SSC-d3.vue')
+        },
+        {
+            path: '/vulnerabilities',
+            component: ()=>import('../views/vulnerabilities.vue')
+        },
+        {
+            path: '/cwe',
+            component: ()=>import('../views/cwe.vue')
+        },
+        {
+            path: '/cot',
+            component: ()=>import('../views/cot.vue')
+        },
+        {
+            path: '/about',
+            component: ()=>import('../views/about.vue')
         }
     ]
 })
