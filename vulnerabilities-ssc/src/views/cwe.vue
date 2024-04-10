@@ -36,18 +36,21 @@
       </el-aside>
       <el-main>
         <div v-if="selectedCVE">
-        <h2 style="text-align: center;">{{ selectedCVE['CVE ID'] }}</h2>
-        <p><strong>Description:</strong>{{ selectedCVE['Description'] }}</p>
-        <p><strong>Base Score: </strong>{{ selectedCVE['Base Score'] }}</p>
-        <p><strong>Severity Vector: </strong>{{ selectedCVE['Severity Vector'] }}</p>
-        <p><strong>Published Date: </strong>{{ selectedCVE['Published Date'] }}</p>
-        <p><strong>Last Modified: </strong>{{ selectedCVE['Last Modified'] }}</p>
-        <p><strong>Change module: </strong>{{ selectedCVE['Change module'] }}</p>
-        <p><strong>Commit: </strong>{{ selectedCVE['Commit'] }}</p>
-        <p><strong>Commit Date: </strong>{{ selectedCVE['Commitdate'] }}</p>
-        <p><strong>Introducing Commit: </strong>{{ selectedCVE['Introducing commit'] }}</p>
-        <p><strong>Introducing Date: </strong>{{ selectedCVE['Introducing date'] }}</p>
-      </div>
+          <h2 style="text-align: center;">{{ selectedCVE['CVE ID'] }}</h2>
+          <p><strong>Description:</strong>{{ selectedCVE['Description'] }}</p>
+          <p><strong>Base Score: </strong>{{ selectedCVE['Base Score'] }}</p>
+          <p><strong>Severity Vector: </strong>{{ selectedCVE['Severity Vector'] }}</p>
+          <p><strong>Published Date: </strong>{{ selectedCVE['Published Date'] }}</p>
+          <p><strong>Last Modified: </strong>{{ selectedCVE['Last Modified'] }}</p>
+          <p><strong>Change module: </strong>{{ selectedCVE['Change module'] }}</p>
+          <p><strong>Commit: </strong>{{ selectedCVE['Commit'] }}</p>
+          <p><strong>Commit Date: </strong>{{ selectedCVE['Commitdate'] }}</p>
+          <p><strong>Introducing Commit: </strong>{{ selectedCVE['Introducing commit'] }}</p>
+          <p><strong>Introducing Date: </strong>{{ selectedCVE['Introducing date'] }}</p>
+          <div class="SSC-graph">
+            <SSC :selected-cve="selectedCveId"></SSC>
+          </div>
+        </div>
       <div v-else>
         <p style="text-align: center; font-size: 20px; font-weight: bold; color: black;">
           Please select a CVE ID to view its details.
@@ -70,9 +73,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed,icon } from 'vue';
+import { ref, computed} from 'vue';
 import { useRouter } from 'vue-router';
 import Vdata from '../assets/dataset/vulnerabilities.json';
+import SSC from '../components/SSC-d3.vue';
 
 const currentPage = ref(1); 
 const pageSize = 25; 
@@ -120,7 +124,7 @@ const currentPageData = computed(() => {
 const activerIndex = ref('2');
 const router = useRouter();
 
-const handleSelect = (index) => {
+const handleSelect = (index: any) => {
   switch (index) {
     case '1':
       router.push('/home');
@@ -135,17 +139,20 @@ const handleSelect = (index) => {
 };
 
 const selectedCVE = ref(null);
-
-const handleNodeClick = (data) => {
+const selectedCveId = ref(null);
+const handleNodeClick = (data: { id: any; }) => {
   const cveId = data.id;
   selectedCVE.value = Vdata.find((item) => item['CVE ID'] === cveId);
+  selectedCveId.value = cveId;
 };
 
-const handleCheckChange = (data) => {
+
+
+const handleCheckChange = (data: any) => {
   console.log('Checked nodes:', data);
 };
 
-const handlePageChange = (page) => {
+const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
 

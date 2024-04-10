@@ -3,9 +3,11 @@
 </template>
  
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, defineProps } from 'vue';
 import * as d3 from 'd3';
 import data from "../assets/dataset/ssc_graph.json";
+import cveAffectedPackage from "../assets/dataset/cve_affected_packages.json";
+
 
 const width = 928;
 const height = 680;
@@ -14,13 +16,30 @@ const height = 680;
 const links = data.links.map(d => ({ ...d }));
 const nodes = data.nodes.map(d => ({ ...d }));
 
+
 onMounted(() => {
     drawBarChart(nodes, links);
 });
 
+// 获取选择的CVE以展示受影响的package，默认展示全部
+const props = defineProps({
+  selectedCve: {
+    type: String,
+    default: () => "notSelected",
+  }
+})
+
+console.log(props.selectedCve)
+
+let cveDate: {};
+if (props.selectedCve != "notSelected") {
+    cveDate = cveAffectedPackage[props.selectedCve];
+}
+console.log(cveDate)
+
 function drawBarChart(nodes: any, links: any) {
     const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id))
+        .force("link", d3.forceLink(links).id((d: { id: any; }) => d.id))
         .force("charge", d3.forceManyBody())
         .force("x", d3.forceX())
         .force("y", d3.forceY());
@@ -50,22 +69,31 @@ function drawBarChart(nodes: any, links: any) {
         .attr("r", 5);
         // .attr("fill", d => color(d.group));
 
-    node.attr("fill", d => {
-        if(d.radius == 1){
-            return d3.schemeCategory10[0];
-        }else if(d.radius == 2){
-            return d3.schemeCategory10[1];
-        }else if(d.radius == 3){
-            return d3.schemeCategory10[2];
-        }else if(d.radius == 4){
-            return d3.schemeCategory10[4];
-        }else{
+    node.attr("fill", (d: { radius: number, id: any; }) => {
+        if(d.radius == 0){
             return d3.schemeCategory10[3];
         }
-    });
+        
+        if(props.selectedCve == "notSelected" || typeof(cveDate)!= "undefined" && Object.prototype.hasOwnProperty.call(cveDate, d.id)){
+            if(d.radius == 1){
+                return d3.schemeCategory10[0];
+            }else if(d.radius == 2){
+                return d3.schemeCategory10[1];
+            }else if(d.radius == 3){
+                return d3.schemeCategory10[2];
+            }else if(d.radius == 4){
+                return d3.schemeCategory10[4];
+            }else{
+                return d3.schemeCategory10[3];
+            }
+        }else{
+            return d3.schemeCategory10[7];
+        }
+        
+    }); //d3.schemeCategory10[7]是灰色
 
     node.append("title")
-        .text(d => d.id);
+        .text((d: { id: any; }) => d.id);
 
     // Add a drag behavior.
     node.call(d3.drag()
@@ -76,14 +104,14 @@ function drawBarChart(nodes: any, links: any) {
     // Set the position attributes of links and nodes each time the simulation ticks.
     simulation.on("tick", () => {
         link
-            .attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
+            .attr("x1", (d: { source: { x: any; }; }) => d.source.x)
+            .attr("y1", (d: { source: { y: any; }; }) => d.source.y)
+            .attr("x2", (d: { target: { x: any; }; }) => d.target.x)
+            .attr("y2", (d: { target: { y: any; }; }) => d.target.y);
 
         node
-            .attr("cx", d => d.x)
-            .attr("cy", d => d.y);
+            .attr("cx", (d: { x: any; }) => d.x)
+            .attr("cy", (d: { y: any; }) => d.y);
     });
 
     function dragstarted(event: any) {

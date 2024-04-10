@@ -92,7 +92,7 @@ const currentPageData = computed(() => {
   });
 });
 
-  const handleSelect = (index) => {
+  const handleSelect = (index: any) => {
   switch (index) {
     case '1':
       router.push('/home');
@@ -108,11 +108,11 @@ const currentPageData = computed(() => {
   
 
 
-    const handleCheckChange = (data) => {
+    const handleCheckChange = (data: any) => {
         console.log('Checked nodes:', data);
     };
 
-    const handlePageChange = (page) => {
+    const handlePageChange = (page: any) => {
         currentPage.value = page;
     };
   </script>

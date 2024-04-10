@@ -28,7 +28,7 @@
   const activerIndex = ref('4')
   const router = useRouter();
   
-  const handleSelect = (index) => {
+  const handleSelect = (index: any) => {
   switch (index) {
     case '1':
       router.push('/home');
