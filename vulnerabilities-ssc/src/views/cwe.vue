@@ -1,5 +1,5 @@
 <template>
-  <el-container class="home_container">
+  <el-container class="home_container" >
     <el-header>
       <div>
         <img class="logo" src="../assets/dataset/AI.jpg" alt="">
@@ -24,7 +24,7 @@
       </template>
     </el-input>
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="250px">
         <el-tree
           :data="currentPageData"
           node-key="CWEId"
@@ -32,6 +32,7 @@
           highlight-current
           @check-change="handleCheckChange"
           @node-click="handleNodeClick"
+          style="margin-bottom:50px;"
         ></el-tree>
       </el-aside>
       <el-main>
@@ -68,6 +69,7 @@
       background
       layout="prev, pager, next"
       :total="totalCWEIds"
+      style="position: fixed; bottom: 0; left: 0; right: 0;"
     ></el-pagination>
   </el-container>
 </template>
@@ -99,6 +101,17 @@ const categorizedData = computed(() => {
 
     categorized[CWEId].CVEIds.push(CVEId);
   });
+
+  // 对CVEIds进行排序
+  for (const key in categorized) {
+    const cveIds = categorized[key].CVEIds;
+    cveIds.sort((a, b) => {
+      const introducingDateA = Vdata.find(item => item['CVE ID'] === a)['Introducing date'];
+      const introducingDateB = Vdata.find(item => item['CVE ID'] === b)['Introducing date'];
+
+      return new Date(introducingDateA).getTime() - new Date(introducingDateB).getTime();
+    });
+  }
 
   return categorized;
 });
@@ -159,8 +172,8 @@ const handlePageChange = (page: number) => {
 const searchCVE = ref('');
 
 const handleSearch = () => {
-  const cveId = searchCVE.value;
-  const foundCVE = Vdata.find((item) => item['CVE ID'] === cveId);
+  const cveId = searchCVE.value.toLowerCase();
+  const foundCVE = Vdata.find((item) => item['CVE ID'].toLowerCase().includes(cveId));
 
   if (foundCVE) {
     selectedCVE.value = foundCVE;

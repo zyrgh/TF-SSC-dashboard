@@ -18,6 +18,12 @@
             <el-menu-item index="3">Chain Of Transmission</el-menu-item>
             <el-menu-item index="4">About</el-menu-item>
         </el-menu>
+        <el-container>
+          <el-main>
+            <p class="title">介绍</p></br>
+            <p></p>
+          </el-main>
+        </el-container>
     </el-container>
   </template>
   
@@ -74,5 +80,10 @@
     height: 50px;
   }
   
-  
+  .title {
+    text-align: center; 
+    font-size: 20px; 
+    font-weight: bold; 
+    color: black;
+  }
   </style>

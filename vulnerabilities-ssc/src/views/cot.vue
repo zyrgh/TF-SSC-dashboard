@@ -19,15 +19,41 @@
             <el-menu-item index="4">About</el-menu-item>
         </el-menu>
         <el-container>
-            <el-aside width="200px">
+            <el-aside width="300px">
                 <el-tree
                 :data="currentPageData"
                 node-key="dependency"
                 accordion
                 highlight-current
                 @check-change="handleCheckChange"
+                @node-click="handleNodeClick"
+                style="margin-bottom:50px;"
                 ></el-tree>
             </el-aside>
+            <el-main>
+              <div v-if="!selectedPackageId">
+                <p class="no-data-msg">Please select a package ID to view its details.</p>
+                <div class="image-container">
+                    <img src="../assets/dataset/img2.jpeg">
+                </div>
+              </div>
+              <ul v-else-if="renderedData.length > 0">
+                <li v-for="(dataItem, index) in renderedData" :key="index">
+                  <div class="info-container">
+                    <span><strong>影响的CVE ID:</strong></span>
+                    <span>{{ dataItem.cveId }}</span>
+                    <span style="margin-left: 30px;"><strong>被影响的版本:</strong></span>
+                    <span>{{ dataItem.affectedVersions.join(', ') }}</span>
+                  </div>
+                </li>
+              </ul>
+              <div v-else>
+                <p class="no-data-msg">There is no impact on the CVE ID and affected version of the warehouse.</p>
+                <div class="image-container">
+                    <img src="../assets/dataset/img3.jpeg">
+                </div>
+              </div>
+            </el-main>
         </el-container>
         <el-pagination
             @current-change="handlePageChange"
@@ -36,6 +62,7 @@
             background
             layout="prev, pager, next"
             :total="totalCWEIds"
+            style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;"
         ></el-pagination>
     </el-container>
   </template>
@@ -44,6 +71,7 @@
   import { ref, computed} from 'vue'
   import { useRouter } from 'vue-router';
   import Vdata from '../assets/dataset/packages.json';
+  import Adata from '../assets/dataset/cve_affected_packages.json';
   
   const activerIndex = ref('3')
   const router = useRouter();
@@ -106,7 +134,30 @@ const currentPageData = computed(() => {
     }
   };
   
+  const renderedData = ref([]);
 
+  const selectedPackageId = ref('');
+
+  const handleNodeClick = (data: { id: string }) => {
+    selectedPackageId.value = data.id;
+
+    const packageId = data.id;
+
+    const affectedData = [];
+
+    for (const cveId in Adata) {
+      if (packageId in Adata[cveId]) {
+        const affectedVersions = Adata[cveId][packageId];
+        affectedData.push({
+          cveId,
+          affectedVersions,
+        });
+      }
+    }
+
+    // 将数据赋值给 renderedData
+    renderedData.value = affectedData;
+  };
 
     const handleCheckChange = (data: any) => {
         console.log('Checked nodes:', data);
@@ -141,11 +192,27 @@ const currentPageData = computed(() => {
         }
     }
   }
+
+  .image-container{
+    display: flex;
+    justify-content: center;
+  }
   
   .logo{
     width: 60px;
     height: 50px;
   }
   
-  
+  .no-data-msg {
+    text-align: center; 
+    font-size: 20px; 
+    font-weight: bold; 
+    color: black;
+  }
+
+  .info-container {
+    display: flex;
+    align-items: center;
+  }
+
   </style>
