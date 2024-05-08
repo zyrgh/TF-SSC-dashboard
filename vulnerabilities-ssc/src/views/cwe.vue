@@ -1,28 +1,30 @@
 <template>
   <el-container class="home_container" >
-    <el-header>
-      <div>
-        <img class="logo" src="../assets/dataset/AI.jpg" alt="">
-        <span>VULNPROP</span>
-      </div>
-    </el-header>
-    <el-menu
-      :default-active="activerIndex"
-      class="el-menu-demo"
-      mode="horizontal"
-      :ellipsis="false"
-      @select="handleSelect"
-    >
-      <el-menu-item index="1">Home</el-menu-item>
-      <el-menu-item index="2">CWE</el-menu-item>
-      <el-menu-item index="3">chain of transmission</el-menu-item>
-      <el-menu-item index="4">About</el-menu-item>
-    </el-menu>
-    <el-input v-model="searchCVE" placeholder="Enter CVE ID" @keydown.enter="handleSearch">
-      <template #append>
-        <el-button icon="el-icon-search" @click="handleSearch"></el-button>
-      </template>
-    </el-input>
+    <div class="header-wrapper">
+      <el-header>
+        <div>
+          <img class="logo" src="../assets/dataset/AI.jpg" alt="">
+          <span>VULNPROP</span>
+        </div>
+      </el-header>
+      <el-menu
+        :default-active="activerIndex"
+        class="el-menu-demo"
+        mode="horizontal"
+        :ellipsis="false"
+        @select="handleSelect"
+      >
+        <el-menu-item index="1">Home</el-menu-item>
+        <el-menu-item index="2">CWE</el-menu-item>
+        <el-menu-item index="3">chain of transmission</el-menu-item>
+        <el-menu-item index="4">About</el-menu-item>
+      </el-menu>
+      <el-input v-model="searchCVE" placeholder="Enter CVE ID" @keydown.enter="handleSearch">
+        <template #append>
+          <el-button icon="el-icon-search" @click="handleSearch"></el-button>
+        </template>
+      </el-input>
+    </div>
     <el-container>
       <el-aside width="250px">
         <el-tree
@@ -32,7 +34,6 @@
           highlight-current
           @check-change="handleCheckChange"
           @node-click="handleNodeClick"
-          style="margin-bottom:50px;"
         ></el-tree>
       </el-aside>
       <el-main>
@@ -57,8 +58,11 @@
           Please select a CVE ID to view its details.
         </p>
         <div class="image-container">
-            <img src="../assets/dataset/img1.png">
+            <img src="../assets/dataset/CWE-tree.png">
         </div>
+        <p>
+          The hierarchy of CWE corresponding to the TensorFlow vulnerability. The red node is the CWE ID that directly corresponds to the CVEs of TensorFlow.
+        </p>
       </div>
       </el-main>
     </el-container>
@@ -87,19 +91,19 @@ const categorizedData = computed(() => {
   const categorized: { [key: string]: { CWEId: string, CVEIds: string[] } } = {};
 
   Vdata.forEach(item => {
-    const CWEId = item['CWE ID'];
+    const CWEIds = item['CWE ID'] ? item['CWE ID'].split(',').map(id => id.trim()) : [];
     const CVEId = item['CVE ID'];
 
-    if (CWEId) {
+    CWEIds.forEach(CWEId => {
       if (!categorized[CWEId]) {
         categorized[CWEId] = {
           CWEId,
           CVEIds: []
         };
       }
-    }
 
-    categorized[CWEId].CVEIds.push(CVEId);
+      categorized[CWEId].CVEIds.push(CVEId);
+    });
   });
 
   // 对CVEIds进行排序
@@ -186,11 +190,29 @@ const handleSearch = () => {
 
 <style scoped>
 
+.header-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+.el-container {
+  margin-top: 80px;
+}
+
 .image-container{
   display: flex;
   justify-content: center;
+  width: 90%;
+  height: auto;
 }
 
+.image-container img{
+  max-width: 100%;
+  height: auto;
+}
 
 .flex-grow {
   flex-grow: 1;
